@@ -35,6 +35,13 @@ function main(): void {
   if (written !== ENTRY) {
     throw new Error("entry.txt bytes differ from the intended text");
   }
+  // Byte-level check: the raw bytes on disk must be exactly the UTF-8
+  // encoding of ENTRY — no BOM, no trailing newline, no encoding substitution.
+  const writtenBytes = readFileSync(outPath);
+  const entryBytes = Buffer.from(ENTRY, "utf8");
+  if (!writtenBytes.equals(entryBytes)) {
+    throw new Error("entry.txt bytes are not the exact UTF-8 encoding of the entry");
+  }
 }
 
 main();
